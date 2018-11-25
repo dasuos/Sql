@@ -7,4 +7,5 @@ interface Select extends Statement {
 
 	public function distinct(): Select;
 	public function from(From $table): Select;
+	public function where(Where $where): Select;
 }
