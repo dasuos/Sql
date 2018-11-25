@@ -1,0 +1,10 @@
+<?php
+declare(strict_types = 1);
+
+namespace Dasuos\Sql;
+
+interface Select extends Statement {
+
+	public function distinct(): Select;
+	public function from(From $table): Select;
+}
