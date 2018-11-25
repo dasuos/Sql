@@ -23,17 +23,34 @@ final class BuiltSelect implements Select {
 		return $this;
 	}
 
+	public function where(Where $where): Select {
+		$this->sql['where'] = $where->sql();
+		return $this;
+	}
+
 	public function sql(): string {
-		return sprintf(
-			'SELECT %s %s',
-			trim(
-				sprintf(
-					'%s %s',
-					$this->sql['distinct'] ?? self::NO_CLAUSE,
-					implode(', ', $this->sql['columns'])
-				)
-			),
-			$this->sql['from']
+		return $this->trim(
+			'SELECT %s',
+			implode(
+				' ',
+				[
+					$this->columns($this->sql),
+					$this->sql['from'],
+					$this->sql['where'] ?? self::NO_CLAUSE,
+				]
+			)
 		);
+	}
+
+	private function columns(array $sql): string {
+		return $this->trim(
+			'%s %s',
+			$sql['distinct'] ?? self::NO_CLAUSE,
+			implode(', ', $sql['columns'])
+		);
+	}
+
+	private function trim(string $sql, string ...$clauses): string {
+		return trim(sprintf($sql, ...$clauses));
 	}
 }

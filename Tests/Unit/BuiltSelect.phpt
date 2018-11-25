@@ -31,6 +31,16 @@ final class BuiltSelect extends Tester\TestCase {
 		);
 	}
 
+	public function testReturningSelectWithWhere(): void {
+		Tester\Assert::same(
+			'SELECT foo FROM foobar WHERE foo = ?',
+			(new Sql\BuiltSelect('foo'))
+				->from(new Sql\BuiltFrom('foobar'))
+				->where(new Sql\BuiltWhere('foo = ?'))
+				->sql()
+		);
+	}
+
 	public function testReturningDistinctSelect(): void {
 		Tester\Assert::same(
 			'SELECT DISTINCT foo, bar FROM foobar',
@@ -41,7 +51,7 @@ final class BuiltSelect extends Tester\TestCase {
 		);
 	}
 
-	public function testReturningSelectWithJoinedTable(): void {
+	public function testReturningSelectWithJoin(): void {
 		Tester\Assert::same(
 			'SELECT foo, bar FROM foobar JOIN barfoo ON bar = foo',
 			(new Sql\BuiltSelect('foo', 'bar'))
@@ -53,49 +63,50 @@ final class BuiltSelect extends Tester\TestCase {
 		);
 	}
 
-	public function testReturningSelectWithInnerJoinedTable(): void {
+	public function testReturningSelectWithJoinAndWhere(): void {
 		Tester\Assert::same(
-			'SELECT foo, bar FROM foobar JOIN barfoo ON bar = foo',
+			'SELECT foo, bar FROM foobar JOIN barfoo ON bar = foo WHERE foo = ?',
 			(new Sql\BuiltSelect('foo', 'bar'))
 				->from(
 					(new Sql\BuiltFrom('foobar'))
-						->join(
-							(new Sql\BuiltJoin('barfoo', 'bar', 'foo'))->inner()
-						)
+						->join(new Sql\BuiltJoin('barfoo', 'bar', 'foo'))
 				)
+				->where(new Sql\BuiltWhere('foo = ?'))
 				->sql()
 		);
 	}
 
-	public function testReturningSelectWithLeftJoinedTable(): void {
+	public function testReturningSelectWithLeftJoin(): void {
 		Tester\Assert::same(
 			'SELECT foo, bar FROM foobar LEFT JOIN barfoo ON bar = foo',
 			(new Sql\BuiltSelect('foo', 'bar'))
 				->from(
 					(new Sql\BuiltFrom('foobar'))
 						->join(
-							(new Sql\BuiltJoin('barfoo', 'bar', 'foo'))->left()
+							(new Sql\BuiltJoin('barfoo', 'bar', 'foo'))
+								->left()
 						)
 				)
 				->sql()
 		);
 	}
 
-	public function testReturningSelectWithRightJoinedTable(): void {
+	public function testReturningSelectWithRightJoin(): void {
 		Tester\Assert::same(
 			'SELECT foo, bar FROM foobar RIGHT JOIN barfoo ON bar = foo',
 			(new Sql\BuiltSelect('foo', 'bar'))
 				->from(
 					(new Sql\BuiltFrom('foobar'))
 						->join(
-							(new Sql\BuiltJoin('barfoo', 'bar', 'foo'))->right()
+							(new Sql\BuiltJoin('barfoo', 'bar', 'foo'))
+								->right()
 						)
 				)
 				->sql()
 		);
 	}
 
-	public function testReturningSelectWithMultipleJoinedTables(): void {
+	public function testReturningSelectWithMultipleJoins(): void {
 		Tester\Assert::same(
 			'SELECT foo, bar FROM foobar JOIN barfoo ON bar = foo LEFT JOIN foobar ON foo = bar',
 			(new Sql\BuiltSelect('foo', 'bar'))
@@ -103,7 +114,8 @@ final class BuiltSelect extends Tester\TestCase {
 					(new Sql\BuiltFrom('foobar'))
 						->join(
 							new Sql\BuiltJoin('barfoo', 'bar', 'foo'),
-							(new Sql\BuiltJoin('foobar', 'foo', 'bar'))->left()
+							(new Sql\BuiltJoin('foobar', 'foo', 'bar'))
+								->left()
 						)
 				)
 				->sql()
