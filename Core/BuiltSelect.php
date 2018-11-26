@@ -23,21 +23,34 @@ final class BuiltSelect implements Select {
 		return $this;
 	}
 
-	public function sql(): string {
-		return $this->trim(
-			'SELECT %s',
-			implode(
-				' ',
-				[
-					implode(', ', $this->sql['columns']),
-					$this->sql['from'],
-					$this->sql['where'] ?? self::NO_CLAUSE,
-				]
-			)
-		);
+	public function order(OrderBy $order): Select {
+		$this->sql['order'] = $order->sql();
+		return $this;
 	}
 
-	private function trim(string $sql, string ...$clauses): string {
-		return trim(sprintf($sql, ...$clauses));
+	public function limit(PreparedLimit $limit): Select {
+		$this->sql['limit'] = $limit->sql();
+		return $this;
+	}
+
+	public function sql(): string {
+		return trim(
+			sprintf(
+				'SELECT %s %s %s',
+				implode(', ', $this->sql['columns']),
+				$this->sql['from'],
+				implode(
+					' ',
+					array_filter(
+						array_map(
+							function($clause) {
+								return $this->sql[$clause] ?? self::NO_CLAUSE;
+							},
+							['where', 'order', 'limit']
+						)
+					)
+				)
+			)
+		);
 	}
 }

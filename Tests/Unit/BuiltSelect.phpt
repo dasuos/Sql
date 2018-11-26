@@ -41,6 +41,29 @@ final class BuiltSelect extends Tester\TestCase {
 		);
 	}
 
+	public function testReturningSelectWithDescendingOrderBy(): void {
+		Tester\Assert::same(
+			'SELECT foo FROM foobar ORDER BY foo DESC',
+			(new Sql\BuiltSelect('foo'))
+				->from(new Sql\BuiltFrom('foobar'))
+				->order(
+					(new Sql\BuiltOrderBy('foo'))
+						->descending()
+				)
+				->sql()
+		);
+	}
+
+	public function testReturningSelectWithLimit(): void {
+		Tester\Assert::same(
+			'SELECT foo FROM foobar LIMIT ? OFFSET ?',
+			(new Sql\BuiltSelect('foo'))
+				->from(new Sql\BuiltFrom('foobar'))
+				->limit(new Sql\PreparedLimit(10))
+				->sql()
+		);
+	}
+
 	public function testReturningSelectWithJoin(): void {
 		Tester\Assert::same(
 			'SELECT foo, bar FROM foobar JOIN barfoo ON bar = foo',
@@ -108,6 +131,29 @@ final class BuiltSelect extends Tester\TestCase {
 								->left()
 						)
 				)
+				->sql()
+		);
+	}
+
+	public function testReturningSelectWithMultipleJoinsWhereOrderAndLimit(): void {
+		Tester\Assert::same(
+			'SELECT foo, bar FROM foobar JOIN barfoo ON bar = foo RIGHT JOIN foobar ON foo = bar WHERE foo = ? OR bar = ? AND foobar = ? ORDER BY foo ASC LIMIT ? OFFSET ?',
+			(new Sql\BuiltSelect('foo', 'bar'))
+				->from(
+					(new Sql\BuiltFrom('foobar'))
+						->join(
+							new Sql\BuiltJoin('barfoo', 'bar', 'foo'),
+							(new Sql\BuiltJoin('foobar', 'foo', 'bar'))
+								->right()
+						)
+				)
+				->where(
+					(new Sql\BuiltWhere('foo = ?'))
+						->or('bar = ?')
+						->and('foobar = ?')
+				)
+				->order(new Sql\BuiltOrderBy('foo'))
+				->limit(new Sql\PreparedLimit(10))
 				->sql()
 		);
 	}
