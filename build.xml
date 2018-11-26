@@ -44,8 +44,8 @@
             <arg value="-p"/>
             <arg value="php"/>
             <arg value="-c"/>
-            <arg path="tests/php.ini"/>
-            <arg path="tests/Unit"/>
+            <arg path="Tests/php.ini"/>
+            <arg path="Tests/Unit"/>
         </exec>
     </target>
 
