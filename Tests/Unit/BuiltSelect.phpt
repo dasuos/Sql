@@ -41,16 +41,6 @@ final class BuiltSelect extends Tester\TestCase {
 		);
 	}
 
-	public function testReturningDistinctSelect(): void {
-		Tester\Assert::same(
-			'SELECT DISTINCT foo, bar FROM foobar',
-			(new Sql\BuiltSelect('foo', 'bar'))
-				->distinct()
-				->from(new Sql\BuiltFrom('foobar'))
-				->sql()
-		);
-	}
-
 	public function testReturningSelectWithJoin(): void {
 		Tester\Assert::same(
 			'SELECT foo, bar FROM foobar JOIN barfoo ON bar = foo',
