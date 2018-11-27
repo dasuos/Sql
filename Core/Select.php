@@ -23,13 +23,23 @@ final class Select implements Statement {
 		return $this;
 	}
 
+	public function group(string ...$columns): Select {
+		$this->sql['group'] = (new GroupBy(...$columns))->sql();
+		return $this;
+	}
+
+	public function having(string $condition): Select {
+		$this->sql['having'] = (new Having($condition))->sql();
+		return $this;
+	}
+
 	public function order(OrderBy $order): Select {
 		$this->sql['order'] = $order->sql();
 		return $this;
 	}
 
-	public function limit(Limit $limit): Select {
-		$this->sql['limit'] = $limit->sql();
+	public function limit($limit): Select {
+		$this->sql['limit'] = (new Limit($limit))->sql();
 		return $this;
 	}
 
@@ -46,7 +56,7 @@ final class Select implements Statement {
 							function($clause) {
 								return $this->sql[$clause] ?? self::NO_CLAUSE;
 							},
-							['where', 'order', 'limit']
+							['where', 'group', 'having', 'order', 'limit']
 						)
 					)
 				)
