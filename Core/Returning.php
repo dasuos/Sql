@@ -3,20 +3,20 @@ declare(strict_types = 1);
 
 namespace Dasuos\Sql;
 
-final class Returning implements Clause {
+final class Returning implements Statement {
 
-	private $statement;
+	private $origin;
 	private $columns;
 
-	public function __construct(Statement $statement, string ...$columns) {
-		$this->statement = $statement;
+	public function __construct(Statement $origin, string ...$columns) {
+		$this->origin = $origin;
 		$this->columns = $columns;
 	}
 
 	public function sql(): string {
 		return sprintf(
 			'%s RETURNING %s',
-			$this->statement->sql(),
+			$this->origin->sql(),
 			implode(', ', $this->columns)
 		);
 	}
