@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Dasuos\Sql;
 
-final class FlatParameters implements Parameters {
+final class InsertParameters implements Parameters {
 
 	private $nested;
 

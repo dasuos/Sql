@@ -11,12 +11,12 @@ require __DIR__ . '/../bootstrap.php';
 /**
  * @testCase
  */
-final class PreparedInsert extends Tester\TestCase {
+final class Insert extends Tester\TestCase {
 
 	public function testReturningInsert(): void {
 		Tester\Assert::same(
 			'INSERT INTO foo (foo, bar) VALUES (?, ?)',
-			(new Sql\PreparedInsert('foo'))
+			(new Sql\Insert('foo'))
 				->columns('foo', 'bar')
 				->values([1, 1])
 				->sql()
@@ -26,7 +26,7 @@ final class PreparedInsert extends Tester\TestCase {
 	public function testReturningMultiInsert(): void {
 		Tester\Assert::same(
 			'INSERT INTO foo (foo, bar) VALUES (?, ?), (?, ?), (?, ?)',
-			(new Sql\PreparedInsert('foo'))
+			(new Sql\Insert('foo'))
 				->columns('foo', 'bar')
 				->values([1, 1], [1, 2], [1, 3])
 				->sql()
@@ -37,7 +37,7 @@ final class PreparedInsert extends Tester\TestCase {
 		Tester\Assert::same(
 			'INSERT INTO foo (foo, bar) VALUES (?, ?) RETURNING foo',
 			(new Sql\Returning(
-				(new Sql\PreparedInsert('foo'))
+				(new Sql\Insert('foo'))
 					->columns('foo', 'bar')
 					->values([1, 1]),
 				'foo'
@@ -46,4 +46,4 @@ final class PreparedInsert extends Tester\TestCase {
 	}
 }
 
-(new PreparedInsert)->run();
+(new Insert)->run();

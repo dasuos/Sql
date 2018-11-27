@@ -11,20 +11,20 @@ require __DIR__ . '/../bootstrap.php';
 /**
  * @testCase
  */
-final class BuiltFrom extends Tester\TestCase {
+final class From extends Tester\TestCase {
 
 	public function testReturningFrom(): void {
 		Tester\Assert::same(
 			'FROM foobar',
-			(new Sql\BuiltFrom('foobar'))->sql()
+			(new Sql\From('foobar'))->sql()
 		);
 	}
 
 	public function testReturningFromWithJoin(): void {
 		Tester\Assert::same(
 			'FROM foobar JOIN barfoo ON foo = bar',
-			(new Sql\BuiltFrom('foobar'))
-				->join(new Sql\BuiltJoin('barfoo', 'foo', 'bar'))
+			(new Sql\From('foobar'))
+				->join(new Sql\Join('barfoo', 'foo', 'bar'))
 				->sql()
 		);
 	}
@@ -32,14 +32,14 @@ final class BuiltFrom extends Tester\TestCase {
 	public function testReturningFromWithMultipleJoins(): void {
 		Tester\Assert::same(
 			'FROM foo JOIN barfoo ON foo = bar LEFT JOIN foobar ON bar = foo',
-			(new Sql\BuiltFrom('foo'))
+			(new Sql\From('foo'))
 				->join(
-					new Sql\BuiltJoin('barfoo', 'foo', 'bar'),
-					(new Sql\BuiltJoin('foobar', 'bar', 'foo'))->left()
+					new Sql\Join('barfoo', 'foo', 'bar'),
+					(new Sql\Join('foobar', 'bar', 'foo'))->left()
 				)
 				->sql()
 		);
 	}
 }
 
-(new BuiltFrom)->run();
+(new From)->run();

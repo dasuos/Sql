@@ -11,13 +11,13 @@ require __DIR__ . '/../bootstrap.php';
 /**
  * @testCase
  */
-final class BuiltSelect extends Tester\TestCase {
+final class Select extends Tester\TestCase {
 
 	public function testReturningSelectWithSingleColumn(): void {
 		Tester\Assert::same(
 			'SELECT foo FROM foobar',
-			(new Sql\BuiltSelect('foo'))
-				->from(new Sql\BuiltFrom('foobar'))
+			(new Sql\Select('foo'))
+				->from(new Sql\From('foobar'))
 				->sql()
 		);
 	}
@@ -25,8 +25,8 @@ final class BuiltSelect extends Tester\TestCase {
 	public function testReturningSelectWithMultipleColumns(): void {
 		Tester\Assert::same(
 			'SELECT foo, bar FROM foobar',
-			(new Sql\BuiltSelect('foo', 'bar'))
-				->from(new Sql\BuiltFrom('foobar'))
+			(new Sql\Select('foo', 'bar'))
+				->from(new Sql\From('foobar'))
 				->sql()
 		);
 	}
@@ -34,9 +34,9 @@ final class BuiltSelect extends Tester\TestCase {
 	public function testReturningSelectWithWhere(): void {
 		Tester\Assert::same(
 			'SELECT foo FROM foobar WHERE foo = ?',
-			(new Sql\BuiltSelect('foo'))
-				->from(new Sql\BuiltFrom('foobar'))
-				->where(new Sql\BuiltWhere('foo = ?'))
+			(new Sql\Select('foo'))
+				->from(new Sql\From('foobar'))
+				->where(new Sql\Where('foo = ?'))
 				->sql()
 		);
 	}
@@ -44,10 +44,10 @@ final class BuiltSelect extends Tester\TestCase {
 	public function testReturningSelectWithDescendingOrderBy(): void {
 		Tester\Assert::same(
 			'SELECT foo FROM foobar ORDER BY foo DESC',
-			(new Sql\BuiltSelect('foo'))
-				->from(new Sql\BuiltFrom('foobar'))
+			(new Sql\Select('foo'))
+				->from(new Sql\From('foobar'))
 				->order(
-					(new Sql\BuiltOrderBy('foo'))
+					(new Sql\OrderBy('foo'))
 						->descending()
 				)
 				->sql()
@@ -57,9 +57,9 @@ final class BuiltSelect extends Tester\TestCase {
 	public function testReturningSelectWithLimit(): void {
 		Tester\Assert::same(
 			'SELECT foo FROM foobar LIMIT ? OFFSET ?',
-			(new Sql\BuiltSelect('foo'))
-				->from(new Sql\BuiltFrom('foobar'))
-				->limit(new Sql\PreparedLimit(10))
+			(new Sql\Select('foo'))
+				->from(new Sql\From('foobar'))
+				->limit(new Sql\Limit(10))
 				->sql()
 		);
 	}
@@ -67,10 +67,10 @@ final class BuiltSelect extends Tester\TestCase {
 	public function testReturningSelectWithJoin(): void {
 		Tester\Assert::same(
 			'SELECT foo, bar FROM foobar JOIN barfoo ON bar = foo',
-			(new Sql\BuiltSelect('foo', 'bar'))
+			(new Sql\Select('foo', 'bar'))
 				->from(
-					(new Sql\BuiltFrom('foobar'))
-						->join(new Sql\BuiltJoin('barfoo', 'bar', 'foo'))
+					(new Sql\From('foobar'))
+						->join(new Sql\Join('barfoo', 'bar', 'foo'))
 				)
 				->sql()
 		);
@@ -79,12 +79,12 @@ final class BuiltSelect extends Tester\TestCase {
 	public function testReturningSelectWithJoinAndWhere(): void {
 		Tester\Assert::same(
 			'SELECT foo, bar FROM foobar JOIN barfoo ON bar = foo WHERE foo = ?',
-			(new Sql\BuiltSelect('foo', 'bar'))
+			(new Sql\Select('foo', 'bar'))
 				->from(
-					(new Sql\BuiltFrom('foobar'))
-						->join(new Sql\BuiltJoin('barfoo', 'bar', 'foo'))
+					(new Sql\From('foobar'))
+						->join(new Sql\Join('barfoo', 'bar', 'foo'))
 				)
-				->where(new Sql\BuiltWhere('foo = ?'))
+				->where(new Sql\Where('foo = ?'))
 				->sql()
 		);
 	}
@@ -92,11 +92,11 @@ final class BuiltSelect extends Tester\TestCase {
 	public function testReturningSelectWithLeftJoin(): void {
 		Tester\Assert::same(
 			'SELECT foo, bar FROM foobar LEFT JOIN barfoo ON bar = foo',
-			(new Sql\BuiltSelect('foo', 'bar'))
+			(new Sql\Select('foo', 'bar'))
 				->from(
-					(new Sql\BuiltFrom('foobar'))
+					(new Sql\From('foobar'))
 						->join(
-							(new Sql\BuiltJoin('barfoo', 'bar', 'foo'))
+							(new Sql\Join('barfoo', 'bar', 'foo'))
 								->left()
 						)
 				)
@@ -107,11 +107,11 @@ final class BuiltSelect extends Tester\TestCase {
 	public function testReturningSelectWithRightJoin(): void {
 		Tester\Assert::same(
 			'SELECT foo, bar FROM foobar RIGHT JOIN barfoo ON bar = foo',
-			(new Sql\BuiltSelect('foo', 'bar'))
+			(new Sql\Select('foo', 'bar'))
 				->from(
-					(new Sql\BuiltFrom('foobar'))
+					(new Sql\From('foobar'))
 						->join(
-							(new Sql\BuiltJoin('barfoo', 'bar', 'foo'))
+							(new Sql\Join('barfoo', 'bar', 'foo'))
 								->right()
 						)
 				)
@@ -122,12 +122,12 @@ final class BuiltSelect extends Tester\TestCase {
 	public function testReturningSelectWithMultipleJoins(): void {
 		Tester\Assert::same(
 			'SELECT foo, bar FROM foobar JOIN barfoo ON bar = foo LEFT JOIN foobar ON foo = bar',
-			(new Sql\BuiltSelect('foo', 'bar'))
+			(new Sql\Select('foo', 'bar'))
 				->from(
-					(new Sql\BuiltFrom('foobar'))
+					(new Sql\From('foobar'))
 						->join(
-							new Sql\BuiltJoin('barfoo', 'bar', 'foo'),
-							(new Sql\BuiltJoin('foobar', 'foo', 'bar'))
+							new Sql\Join('barfoo', 'bar', 'foo'),
+							(new Sql\Join('foobar', 'foo', 'bar'))
 								->left()
 						)
 				)
@@ -138,25 +138,25 @@ final class BuiltSelect extends Tester\TestCase {
 	public function testReturningSelectWithMultipleJoinsWhereOrderAndLimit(): void {
 		Tester\Assert::same(
 			'SELECT foo, bar FROM foobar JOIN barfoo ON bar = foo RIGHT JOIN foobar ON foo = bar WHERE foo = ? OR bar = ? AND foobar = ? ORDER BY foo ASC LIMIT ? OFFSET ?',
-			(new Sql\BuiltSelect('foo', 'bar'))
+			(new Sql\Select('foo', 'bar'))
 				->from(
-					(new Sql\BuiltFrom('foobar'))
+					(new Sql\From('foobar'))
 						->join(
-							new Sql\BuiltJoin('barfoo', 'bar', 'foo'),
-							(new Sql\BuiltJoin('foobar', 'foo', 'bar'))
+							new Sql\Join('barfoo', 'bar', 'foo'),
+							(new Sql\Join('foobar', 'foo', 'bar'))
 								->right()
 						)
 				)
 				->where(
-					(new Sql\BuiltWhere('foo = ?'))
+					(new Sql\Where('foo = ?'))
 						->or('bar = ?')
 						->and('foobar = ?')
 				)
-				->order(new Sql\BuiltOrderBy('foo'))
-				->limit(new Sql\PreparedLimit(10))
+				->order(new Sql\OrderBy('foo'))
+				->limit(new Sql\Limit(10))
 				->sql()
 		);
 	}
 }
 
-(new BuiltSelect)->run();
+(new Select)->run();

@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Dasuos\Sql;
 
-final class PreparedLimit implements Clause {
+final class Limit implements Clause {
 
 	private const NO_LIMIT = '';
 
