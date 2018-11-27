@@ -59,7 +59,7 @@ final class Select extends Tester\TestCase {
 			'SELECT foo FROM foobar LIMIT ? OFFSET ?',
 			(new Sql\Select('foo'))
 				->from(new Sql\From('foobar'))
-				->limit(new Sql\Limit(10))
+				->limit(10)
 				->sql()
 		);
 	}
@@ -96,8 +96,7 @@ final class Select extends Tester\TestCase {
 				->from(
 					(new Sql\From('foobar'))
 						->join(
-							(new Sql\Join('barfoo', 'bar', 'foo'))
-								->left()
+							(new Sql\Join('barfoo', 'bar', 'foo'))->left()
 						)
 				)
 				->sql()
@@ -111,8 +110,7 @@ final class Select extends Tester\TestCase {
 				->from(
 					(new Sql\From('foobar'))
 						->join(
-							(new Sql\Join('barfoo', 'bar', 'foo'))
-								->right()
+							(new Sql\Join('barfoo', 'bar', 'foo'))->right()
 						)
 				)
 				->sql()
@@ -127,8 +125,7 @@ final class Select extends Tester\TestCase {
 					(new Sql\From('foobar'))
 						->join(
 							new Sql\Join('barfoo', 'bar', 'foo'),
-							(new Sql\Join('foobar', 'foo', 'bar'))
-								->left()
+							(new Sql\Join('foobar', 'foo', 'bar'))->left()
 						)
 				)
 				->sql()
@@ -143,8 +140,7 @@ final class Select extends Tester\TestCase {
 					(new Sql\From('foobar'))
 						->join(
 							new Sql\Join('barfoo', 'bar', 'foo'),
-							(new Sql\Join('foobar', 'foo', 'bar'))
-								->right()
+							(new Sql\Join('foobar', 'foo', 'bar'))->right()
 						)
 				)
 				->where(
@@ -153,7 +149,28 @@ final class Select extends Tester\TestCase {
 						->and('foobar = ?')
 				)
 				->order(new Sql\OrderBy('foo'))
-				->limit(new Sql\Limit(10))
+				->limit(10)
+				->sql()
+		);
+	}
+
+	public function testReturningSelectWithGroupBy(): void {
+		Tester\Assert::same(
+			'SELECT foo, SUM(bar) FROM foobar GROUP BY foo',
+			(new Sql\Select('foo', 'SUM(bar)'))
+				->from(new Sql\From('foobar'))
+				->group('foo')
+				->sql()
+		);
+	}
+
+	public function testReturningSelectWithGroupByAndHaving(): void {
+		Tester\Assert::same(
+			'SELECT foo, bar FROM foobar GROUP BY foo HAVING COUNT(foo) > 2',
+			(new Sql\Select('foo', 'bar'))
+				->from(new Sql\From('foobar'))
+				->group('foo')
+				->having('COUNT(foo) > 2')
 				->sql()
 		);
 	}

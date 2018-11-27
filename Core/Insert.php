@@ -19,8 +19,22 @@ final class Insert implements Statement {
 		return $this;
 	}
 
-	public function values(array ...$values): Insert {
-		$this->sql['values'] = $values;
+	public function values(array $values, Select ...$selects): Insert {
+		$this->sql['values'] = array_map(
+			function ($values) use ($selects) {
+				return sprintf(
+					'(%s)',
+					implode(
+						self::SEPARATOR,
+						array_merge(
+							$this->placeholders($values),
+							$this->selects($selects)
+						)
+					)
+				);
+			},
+			$values
+		);
 		return $this;
 	}
 
@@ -31,23 +45,21 @@ final class Insert implements Statement {
 			implode(self::SEPARATOR, $this->sql['columns']),
 			implode(
 				self::SEPARATOR,
-				array_map(
-					function ($values) {
-						return sprintf(
-							'(%s)',
-							$this->placeholders($values)
-						);
-					},
-					$this->sql['values']
-				)
+				$this->sql['values']
 			)
 		);
 	}
 
-	private function placeholders(array $values): string {
-		return implode(
-			self::SEPARATOR,
-			array_fill(0, count($values), self::PLACEHOLDER)
+	private function placeholders(array $values): array {
+		return array_fill(0, count($values), self::PLACEHOLDER);
+	}
+
+	private function selects(array $selects): array {
+		return array_map(
+			static function(Select $select) {
+				return sprintf('(%s)', $select->sql());
+			},
+			$selects
 		);
 	}
 }
