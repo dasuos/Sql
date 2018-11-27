@@ -11,19 +11,19 @@ require __DIR__ . '/../bootstrap.php';
 /**
  * @testCase
  */
-final class BuiltWhere extends Tester\TestCase {
+final class Where extends Tester\TestCase {
 
 	public function testReturningWhereWithSingleCondition(): void {
 		Tester\Assert::same(
 			'WHERE foo = ?',
-			(new Sql\BuiltWhere('foo = ?'))->sql()
+			(new Sql\Where('foo = ?'))->sql()
 		);
 	}
 
 	public function testReturningFromWhereWithLogicalConjunction(): void {
 		Tester\Assert::same(
 			"WHERE foo = ? AND bar IN ('foo', 'bar')",
-			(new Sql\BuiltWhere('foo = ?'))
+			(new Sql\Where('foo = ?'))
 				->and("bar IN ('foo', 'bar')")
 				->sql()
 		);
@@ -32,7 +32,7 @@ final class BuiltWhere extends Tester\TestCase {
 	public function testReturningFromWhereWithLogicalDisjunction(): void {
 		Tester\Assert::same(
 			"WHERE foo = ? OR bar IN ('foo', 'bar')",
-			(new Sql\BuiltWhere('foo = ?'))
+			(new Sql\Where('foo = ?'))
 				->or("bar IN ('foo', 'bar')")
 				->sql()
 		);
@@ -41,7 +41,7 @@ final class BuiltWhere extends Tester\TestCase {
 	public function testReturningFromWhereWithManyLogicalOperators(): void {
 		Tester\Assert::same(
 			"WHERE foo = ? OR bar IN ('foo', 'bar') AND bar = ?",
-			(new Sql\BuiltWhere('foo = ?'))
+			(new Sql\Where('foo = ?'))
 				->or("bar IN ('foo', 'bar')")
 				->and('bar = ?')
 				->sql()
@@ -49,4 +49,4 @@ final class BuiltWhere extends Tester\TestCase {
 	}
 }
 
-(new BuiltWhere)->run();
+(new Where)->run();
