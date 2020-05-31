@@ -24,10 +24,12 @@ final class OrderBy implements Clause {
 	}
 
 	public function sql(): string {
-		return sprintf(
-			'ORDER BY %s %s',
-			implode(', ', $this->sql['columns']),
-			$this->sql['sort'] ?? self::DEFAULT
+		return trim(
+			sprintf(
+				'ORDER BY %s %s',
+				implode(', ', $this->sql['columns']),
+				$this->sql['sort'] ?? ''
+			)
 		);
 	}
 }

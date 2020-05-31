@@ -148,7 +148,7 @@ final class Select extends Tester\TestCase {
 						->or('bar = ?')
 						->and('foobar = ?')
 				)
-				->order(new Sql\OrderBy('foo'))
+				->order((new Sql\OrderBy('foo'))->ascending())
 				->limit(10)
 				->sql()
 		);
