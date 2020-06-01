@@ -9,8 +9,17 @@ final class From implements Statement {
 
 	private $sql;
 
-	public function __construct(string $table) {
+	public function __construct(string $table = '') {
 		$this->sql['table'] = $table;
+	}
+
+	public function select(Select $select, string $name): From {
+		$this->sql['select'] = sprintf(
+			'FROM (%s) %s',
+			$select->sql(),
+			$name
+		);
+		return $this;
 	}
 
 	public function join(Join ...$joins): From {
@@ -27,15 +36,21 @@ final class From implements Statement {
 	}
 
 	public function sql(): string {
-		return sprintf(
+		return $this->sql['select'] ?? sprintf(
 			'FROM %s',
 			trim(
 				sprintf(
 					'%s %s',
-					$this->sql['table'],
+					$this->table($this->sql),
 					$this->sql['joins'] ?? self::NO_CLAUSE
 				)
 			)
 		);
+	}
+
+	private function table(array $sql): string {
+		if ($sql['table'])
+			return $sql['table'];
+		throw new \InvalidArgumentException('Table name must be specified');
 	}
 }

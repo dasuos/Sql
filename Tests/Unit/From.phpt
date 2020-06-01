@@ -40,6 +40,26 @@ final class From extends Tester\TestCase {
 				->sql()
 		);
 	}
+
+	public function testReturningFromWithSubquery(): void {
+		Tester\Assert::same(
+			'FROM (SELECT foo FROM bar) foobar',
+			(new Sql\From)->select(
+				(new Sql\Select('foo'))->from(new Sql\From('bar')),
+				'foobar'
+			)->sql()
+		);
+	}
+
+	public function testThrowingOnEmptyTable(): void {
+		Tester\Assert::exception(
+			static function() {
+				(new Sql\From)->sql();
+			},
+			\InvalidArgumentException::class,
+			'Table name must be specified'
+		);
+	}
 }
 
 (new From)->run();
