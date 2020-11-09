@@ -37,6 +37,18 @@ final class Join extends Tester\TestCase {
 				->sql()
 		);
 	}
+
+	public function testReturningJoinedSelect(): void {
+		Tester\Assert::same(
+			'JOIN (SELECT foo FROM bar) AS f ON f.foo = b.bar',
+			(new Sql\Join('f', 'f.foo', 'b.bar'))
+				->select(
+					(new Sql\Select('foo'))
+						->from(new Sql\From('bar'))
+				)
+				->sql()
+		);
+	}
 }
 
 (new Join)->run();

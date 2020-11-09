@@ -5,7 +5,7 @@ namespace Dasuos\Sql;
 
 final class Join implements Clause {
 
-	private const DEFAULT = 'JOIN';
+	private const INNER = 'JOIN';
 
 	private $sql;
 
@@ -20,7 +20,7 @@ final class Join implements Clause {
 	}
 
 	public function inner(): Join {
-		$this->sql['join'] = self::DEFAULT;
+		$this->sql['join'] = self::INNER;
 		return $this;
 	}
 
@@ -34,14 +34,19 @@ final class Join implements Clause {
 		return $this;
 	}
 
+	public function select(Select $select): Join {
+		$this->sql['select'] = sprintf('%s', $select->sql());
+		return $this;
+	}
+
 	public function sql(): string {
+		$join = $this->sql['join'] ?? self::INNER;
 		return sprintf(
-			'%s ON %s = %s',
-			sprintf(
-				'%s %s',
-				$this->sql['join'] ?? self::DEFAULT,
-				$this->sql['table']
-			),
+			'%s %s ON %s = %s',
+			isset($this->sql['select'])
+				? sprintf('%s (%s) AS', $join, $this->sql['select'])
+				: $join,
+			$this->sql['table'],
 			$this->sql['column1'],
 			$this->sql['column2']
 		);
